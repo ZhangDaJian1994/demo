@@ -308,14 +308,22 @@ public class ArithHelper {
     /**
      * 算法11 e^a
      */
-    // public static double exp(double a, double epslion) {
-    //     double epslion_ = 0.1;
-    //     double a_ = Main(a, epslion_);
-    //     double epslion__ = 0.2;
-    //     double y1 = exp1(a_+epslion_,epslion__);
-    //     a_ = Main(a, cons(epslion/(2*(y1+epslion__))));
-    //     return exp1(a_,epslion/2);
-    // }
+    public static BigDecimal exp(Tree a, BigDecimal epslion) {
+        BigDecimal epslion_ = ZeroDone;
+        BigDecimal a_ = Main(a, epslion_);
+        BigDecimal epslion__ = ZeroDone.add(ZeroDone);
+        Tree t = new Tree();
+        t.value = a_.add(epslion_).toString();
+        t.left = null;
+        t.right = null;
+        BigDecimal y1 = exp1(t, epslion__);
+        a1_ = Main(a, cons(epslion.divide(Two.multiply(y1.add(epslion__)))));
+        t = new Tree();
+        t.value = a1_.toString();
+        t.left = null;
+        t.right = null;
+        return exp1(t, epslion.divide(Two));
+    }
 
     /**
      * 算法12 计算a1^a2
