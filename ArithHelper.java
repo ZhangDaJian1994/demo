@@ -1,6 +1,8 @@
 import java.math.BigDecimal;
 
 
+
+
 class Tree {
     String value;
     Tree left;
@@ -10,6 +12,8 @@ public class ArithHelper {
 
 
     public static BigDecimal Two = new BigDecimal(2L);
+    public static BigDecimal ZeroDone = new BigDecimal("0.1");
+    public static BigDecimal Four = new BigDecimal(4);
     // 默认除法运算精度
     private static final int DEF_DIV_SCALE = 16;
     private static double epslion = Math.pow(10, -10);
@@ -62,9 +66,30 @@ public class ArithHelper {
      * @param epslion2
      * @return
      */
-    private static BigDecimal div(Tree left, Tree right, BigDecimal epslion2) {
-        
-        return null;
+    private static BigDecimal div(Tree left, Tree right, BigDecimal epslion) {
+        BigDecimal a1_ = Main(left, new BigDecimal("0.1"));
+        BigDecimal a1_abs = a1_.abs();
+        BigDecimal a1_abs_up = a1_abs.add(ZeroDone);
+        BigDecimal epslion2 = ZeroDone;
+        BigDecimal a2_ = Main(right, epslion2);
+        int r = a2_.abs().compareTo(Two.multiply(epslion2));
+        while (r == 0 || r == -1) {  //|˜ a 2 | <= 2 × ε 2
+            epslion2 = ZeroDone.multiply(epslion2);
+            a2_ = Main(right, epslion2);
+        }
+        BigDecimal a2_abs = a2_.abs();
+        BigDecimal a2_abs_down = a2_abs.subtract(epslion2);
+        int r1 = Four.multiply(a1_abs_up).multiply(epslion2).abs().compareTo(a2_.multiply(a2_abs_down).multiply(epslion).abs());
+        while (r1 == 0 || r1 == 1) {
+            epslion2 = ZeroDone.multiply(epslion2);
+            a2_ = Main(right, epslion2);
+        }
+        a1_ = Main(left, cons(a2_abs.divide(Four).multiply(epslion)));
+        Tree t = new Tree();
+        t.value = a1_.divide(a2_).toString();
+        t.left = null;
+        t.right = null;
+        return Main(t, epslion.divide(Two));
     }
 
     }
