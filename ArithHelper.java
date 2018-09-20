@@ -218,21 +218,37 @@ public class ArithHelper {
      * @return
      */
 
-    //  public static double lnl(double c, double epslion) {
-    //      if (c == 1) {
-    //          return 0;
-    //      }else{
-    //          int n = 1;
-    //          while (2* Math.pow(Math.abs(c-1), 2*n+1) >= 4*n*c*Math.pow(c+1, 2*n-1)*epslion ) {
-    //             n += 1;
-    //          }
-    //      }
-    //      double sum = 0;
-    //      for (int i = 0; i < n; i++) {
-    //          sum += 2/(2*i-1)*((Math.pow(c-1, 2*n-1)/(Math.pow(c+1, 2*n-1))));
-    //      }
-    //      return Main(sum,epslion/2);
-    //  }
+     public static BigDecimal lnl(Tree t, BigDecimal epslion) {
+        BigDecimal c = new BigDecimal(t.value);
+         if(c.equals("1")) {
+             return BigDecimal.ZERO;
+         }
+         else {
+             BigDecimal n = BigDecimal.ONE;
+             BigDecimal c_1 = c.subtract(BigDecimal.ONE);
+             BigDecimal c_1_abs = c_1.abs();
+             BigDecimal four_n_c = Four.multiply(c).multiply(n);
+             BigDecimal r = Two.multiply(c_1_abs.pow(2*n.intValue()+1)).
+                compareTo(four_n_c.multiply(c.add(BigDecimal.ONE).pow(2*n.intValue()-1)).multiply(epslion)); //
+             while (r == 0 || r == 1) {
+                 n = n.add(BigDecimal.ONE);
+             }
+            //求前n项表达式之和
+            BigDecimal sum = 0;
+            BigDecimal cc = c.subtract(BigDecimal.ONE).divide(c.add(BigDecimal.ONE));// c-1/c+1
+             for (int i = 0; i < n.intValue(); i++) {
+                 BigDecimal k = new BigDecimal(i);
+                BigDecimal item = Two.divide(Two.multiply(k).add(BigDecimal.ONE));
+                sum = sum.add(item.multiply(cc.pow(Two.multiply(k).add(BigDecimal.ONE).intValue())));
+             }
+             Tree t = new Tree();
+             t.value = sum.toString();
+             t.left = null;
+             t.right = null;
+             return Main(t, epslion.divide(Two));
+         }
+
+     }
     /**
      * 算法9
      * @param v
