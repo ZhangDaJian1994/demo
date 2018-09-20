@@ -241,11 +241,11 @@ public class ArithHelper {
                 BigDecimal item = Two.divide(Two.multiply(k).add(BigDecimal.ONE));
                 sum = sum.add(item.multiply(cc.pow(Two.multiply(k).add(BigDecimal.ONE).intValue())));
              }
-             Tree t = new Tree();
-             t.value = sum.toString();
-             t.left = null;
-             t.right = null;
-             return Main(t, epslion.divide(Two));
+             Tree t1 = new Tree();
+             t1.value = sum.toString();
+             t1.left = null;
+             t1.right = null;
+             return Main(t1, epslion.divide(Two));
          }
 
      }
@@ -255,20 +255,40 @@ public class ArithHelper {
      * @param scale
      * @return
      */
-    // public static double ln(String a) {
-    //     if (isConstants(a)) {
-    //         return lnl(Double.parseDouble(a), epslion);
-    //     }else {
-    //         double epslion1 = 0.1;
-    //         double a1 = Main(a,epslion1);
-    //         while (Math.abs(a1) <= 2*epslion1 && 2*epslion1 > (Math.abs(a1)-epslion1)*epslion) {
-    //             epslion1 *= 0.1;
-    //             a1 = Main(a,epslion1);
-    //         }
-    //         return lnl(a1, epslion/2);
-    //     }
+    public static BigDecimal ln(Tree a, BigDecimal epslion) {
+        if (!isOp(a.value)) {
+            return lnl(a, epslion);
+        }
+        else {
+            BigDecimal epslion_ = ZeroDone;
+            BigDecimal a_ = Main(a, epslion_);
+            BigDecimal a_abs = a_.abs();
+            int r1 = a_abs.compareTo(Two.multiply(epslion_));
+            int r2 = Two.multiply(epslion_).compareTo(a_abs.subtract(epslion_).multiply(epslion));
+            while ((r1 == 0 || r1 == -1) && r2 == 1 ){
+                epslion_ = ZeroDone.multiply(epslion_);
+                a_ = Main(a, epslion_);
+            }
+            Tree t = new Tree();
+            t.value = a_.toString();
+            t.left = null;
+            t.right = null;
+            return lnl(t, epslion.divide(Two));
+        }
 
-    // }
+        // if (isConstants(a)) {
+        //     return lnl(Double.parseDouble(a), epslion);
+        // }else {
+        //     double epslion1 = 0.1;
+        //     double a1 = Main(a,epslion1);
+        //     while (Math.abs(a1) <= 2*epslion1 && 2*epslion1 > (Math.abs(a1)-epslion1)*epslion) {
+        //         epslion1 *= 0.1;
+        //         a1 = Main(a,epslion1);
+        //     }
+        //     return lnl(a1, epslion/2);
+        // }
+
+    }
     /**
      * 算法10 e^c c为常数
      */
