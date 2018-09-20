@@ -275,35 +275,36 @@ public class ArithHelper {
             t.right = null;
             return lnl(t, epslion.divide(Two));
         }
-
-        // if (isConstants(a)) {
-        //     return lnl(Double.parseDouble(a), epslion);
-        // }else {
-        //     double epslion1 = 0.1;
-        //     double a1 = Main(a,epslion1);
-        //     while (Math.abs(a1) <= 2*epslion1 && 2*epslion1 > (Math.abs(a1)-epslion1)*epslion) {
-        //         epslion1 *= 0.1;
-        //         a1 = Main(a,epslion1);
-        //     }
-        //     return lnl(a1, epslion/2);
-        // }
-
     }
     /**
      * 算法10 e^c c为常数
      */
-    // public static double exp1(double c, double epslion) {
-    //     int n = Math.max(1, Math.ceil(Math.abs(c)));
-    //     while (2*(Math.pow(c, n)) >= factorial(n-1) * (n-c) * epslion ) {
-    //         n++;
-    //     }
-    //     for (int i = 0; i < n; i++) {
-    //         double sum = 0;
-    //         sum += 1/(factorial(i)) * Math.pow(c, i);
-    //     }
+    public static BigDecimal exp1(Tree a, BigDecimal epslion) {
+        BigDecimal c = new BigDecimal(a.value);
+        int cc = c.abs().intValue();
+        int n = Math.max(cc, 1);
+        BigDecimal nn = new BigDecimal(n);
 
-    //     return Main(sum, epslion/2);
-    // }
+        int r = Two.multiply(c.pow(n)).compareTo(nn.subtract(c).multiply(epslion)
+            .multiply(factorial(nn.subtract(BigDecimal.ONE))));
+        
+        while ( r == 0 || r == 1) {
+             n++;
+        }
+
+        BigDecimal sum = 0;
+        /// 计算式(19) 中前 n 项的和 .
+        for (int i = 0; i < n; i++) {
+            BigDecimal k = new BigDecimal(i);
+            BigDecimal fm = factorial(k);
+            sum = sum.add(BigDecimal.ONE.divide(fm).multiply(c.pow(i)));
+        }
+        Tree t = new Tree();
+        t.value = sum.toString();
+        t.left = null;
+        t.right = null;
+        return Main(t, epslion.divide(Two));
+    }
     /**
      * 算法11 e^a
      */
@@ -334,11 +335,12 @@ public class ArithHelper {
     /**
      * 求阶乘
      */
-    public static int factorial(int n) {
-        if (n <= 1)
-            return 1;
+    public static BigDecimal factorial(BigDecimal n) {
+        int r = n.compareTo(BigDecimal.ONE);
+        if (r == 0 || r == -1)
+            return BigDecimal.ONE;
         else
-            return n*factorial(n-1);
+            return n.multiply(factorial(n.subtract(BigDecimal.ONE)));
     }
     /**
      * 生成精度
