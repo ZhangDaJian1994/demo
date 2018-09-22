@@ -7,8 +7,7 @@ public class ArithHelper {
     public static BigDecimal ZeroDone = new BigDecimal("0.1");
     public static BigDecimal Four = new BigDecimal(4);
     // 默认除法运算精度
-    private static final int DEF_DIV_SCALE = 16;
-    private static double epslion = Math.pow(10, -10);
+    public static  int def_scale = 10;
     // 这个类不能实例化
     private ArithHelper() {
     }
@@ -29,25 +28,31 @@ public class ArithHelper {
             //两个常数的四则运算的结果; //由假设知, 可以获得两个常数的四则运算任意精度的值
             //TODO 补充精度相关内容
             switch (a.value) {
-                case '+':
+                case "+":
                     return left.add(right);
-                    break;
-                case '-':
+
+                case "-":
                     return left.subtract(right);
-                    break;
-                case '*':
+
+                case "*":
                     return left.multiply(right);
-                    break;
-                case '/':
-                    return left.divide(right);
-                    break;
+
+                case "/":
+                    return left.divide(right,def_scale,6);
+
                 default:
             }
-        }else if (isOp(a.value) && a.value.equals("*")) {   //若a 是两个表达式的积, 则调用算法2.Mul(a1; a2; ")
+        }else if ((a.value.equals("+") || a.value.equals("-")) && (isOp(a.left.value) || isOp(a.right.value))){
+            BigDecimal left = Main(a.left, cons(epslion.divide(Two, def_scale, 6)));
+            BigDecimal right = Main(a.right,  cons(epslion.divide(Two, def_scale, 6)));
+            return a.value.equals("+") ? left.add(right) : left.subtract(right);
+        }
+        else if (isOp(a.value) && a.value.equals("*")) {   //若a 是两个表达式的积, 则调用算法2.Mul(a1; a2; ")
             return mul(a.left, a.right, epslion);
         }else if (isOp(a.value) && a.value.equals("/")) {
             return div(a.left, a.right, epslion);
         }
+        return new BigDecimal("0");
         }
 
 
@@ -55,7 +60,7 @@ public class ArithHelper {
      * 算法3
      * @param left
      * @param right
-     * @param epslion2
+     * @param
      * @return
      */
     private static BigDecimal div(Tree left, Tree right, BigDecimal epslion) {
@@ -76,33 +81,33 @@ public class ArithHelper {
             epslion2 = ZeroDone.multiply(epslion2);
             a2_ = Main(right, epslion2);
         }
-        a1_ = Main(left, cons(a2_abs.divide(Four).multiply(epslion)));
+        a1_ = Main(left, cons(a2_abs.divide(Four, def_scale, 6).multiply(epslion)));
         Tree t = new Tree();
-        t.value = a1_.divide(a2_).toString();
+        t.value = a1_.divide(a2_, def_scale, 6).toString();
         t.left = null;
         t.right = null;
-        return Main(t, epslion.divide(Two));
+        return Main(t, epslion.divide(Two, def_scale, 6));
     }
 
     /**
      * 算法2 乘法
-     * @param c
+     * @param
      * @param epslion
      * @return
      */
     public static BigDecimal mul(Tree a1, Tree a2, BigDecimal epslion) {
         BigDecimal a2_ = Main(a2, new BigDecimal("0.1"));
         BigDecimal a2_abs = a2_.abs();
-        BigDecimal epslion_1 = cons(epslion.divide(Two.multiply(a2_abs.add(new BigDecimal("0.1"))))); //BigDecimal epslion_1 = cons(epslion/(2*(Math.abs(a2_)+0.1)));
+        BigDecimal epslion_1 = cons(epslion.divide(Two.multiply(a2_abs.add(new BigDecimal("0.1"))), def_scale, 6)); //BigDecimal epslion_1 = cons(epslion/(2*(Math.abs(a2_)+0.1)));
         BigDecimal a1_ = Main(a1, epslion_1);
         BigDecimal a1_abs = a1_.abs();
-        BigDecimal epslion_2 = cons(epslion.divide(Two.multiply(a1_abs)));//BigDecimal epslion_2 = cons(epslion/(2*Math.abs(a1_)));
+        BigDecimal epslion_2 = cons(epslion.divide(Two.multiply(a1_abs), def_scale, 6));//BigDecimal epslion_2 = cons(epslion/(2*Math.abs(a1_)));
         a2_ = Main(a2, epslion_2);
         return a1_.multiply(a2_);
     }
     /**
      * 算法8
-     * @param v1
+     * @param
      * @return
      */
 
@@ -116,31 +121,34 @@ public class ArithHelper {
              BigDecimal c_1 = c.subtract(BigDecimal.ONE);
              BigDecimal c_1_abs = c_1.abs();
              BigDecimal four_n_c = Four.multiply(c).multiply(n);
-             BigDecimal r = Two.multiply(c_1_abs.pow(2*n.intValue()+1)).
+             int r = Two.multiply(c_1_abs.pow(2*n.intValue()+1)).
                 compareTo(four_n_c.multiply(c.add(BigDecimal.ONE).pow(2*n.intValue()-1)).multiply(epslion)); //
+
+//             BigDecimal r1 = Two.multiply(c_1.abs().pow(2*n.intValue()+1).compareTo(four_n_c.multiply(c.add(BigDecimal.ONE).pow(2*n.intValue()-1).multiply(epslion))));
+
              while (r == 0 || r == 1) {
                  n = n.add(BigDecimal.ONE);
              }
             //求前n项表达式之和
-            BigDecimal sum = 0;
-            BigDecimal cc = c.subtract(BigDecimal.ONE).divide(c.add(BigDecimal.ONE));// c-1/c+1
+            BigDecimal sum = new BigDecimal("0");
+            BigDecimal cc = c.subtract(BigDecimal.ONE).divide(c.add(BigDecimal.ONE), def_scale, 6);// c-1/c+1
              for (int i = 0; i < n.intValue(); i++) {
                  BigDecimal k = new BigDecimal(i);
-                BigDecimal item = Two.divide(Two.multiply(k).add(BigDecimal.ONE));
+                BigDecimal item = Two.divide(Two.multiply(k).add(BigDecimal.ONE), def_scale, 6);
                 sum = sum.add(item.multiply(cc.pow(Two.multiply(k).add(BigDecimal.ONE).intValue())));
              }
              Tree t1 = new Tree();
              t1.value = sum.toString();
              t1.left = null;
              t1.right = null;
-             return Main(t1, epslion.divide(Two));
+             return Main(t1, epslion.divide(Two, def_scale, 6));
          }
 
      }
     /**
      * 算法9
-     * @param v
-     * @param scale
+     * @param
+     * @param
      * @return
      */
     public static BigDecimal ln(Tree a, BigDecimal epslion) {
@@ -161,7 +169,7 @@ public class ArithHelper {
             t.value = a_.toString();
             t.left = null;
             t.right = null;
-            return lnl(t, epslion.divide(Two));
+            return lnl(t, epslion.divide(Two, def_scale, 6));
         }
     }
     /**
@@ -180,18 +188,18 @@ public class ArithHelper {
              n++;
         }
 
-        BigDecimal sum = 0;
+        BigDecimal sum = new BigDecimal("0");
         /// 计算式(19) 中前 n 项的和 .
         for (int i = 0; i < n; i++) {
             BigDecimal k = new BigDecimal(i);
             BigDecimal fm = factorial(k);
-            sum = sum.add(BigDecimal.ONE.divide(fm).multiply(c.pow(i)));
+            sum = sum.add(BigDecimal.ONE.divide(fm, def_scale, 6).multiply(c.pow(i)));
         }
         Tree t = new Tree();
         t.value = sum.toString();
         t.left = null;
         t.right = null;
-        return Main(t, epslion.divide(Two));
+        return Main(t, epslion.divide(Two, def_scale, 6));
     }
     /**
      * 算法11 e^a
@@ -205,28 +213,38 @@ public class ArithHelper {
         t.left = null;
         t.right = null;
         BigDecimal y1 = exp1(t, epslion__);
-        a1_ = Main(a, cons(epslion.divide(Two.multiply(y1.add(epslion__)))));
+        BigDecimal a1_ = Main(a, cons(epslion.divide(Two.multiply(y1.add(epslion__)), def_scale, 6)));
         t = new Tree();
         t.value = a1_.toString();
         t.left = null;
         t.right = null;
-        return exp1(t, epslion.divide(Two));
+        return exp1(t, epslion.divide(Two, def_scale, 6));
     }
 
     /**
      * 算法12 计算a1^a2
      */
-    // public static double exp(double a1, double a2, double epslion) {
-    //     if (a1 == 0)
-    //         return 0;
-    //     else if (a1 > 0 )
-    //         return Main(Math.pow(Math.E, a2*Math.log(a1)), epslion);
-    //     else if (a2 % 2 == 0 )    //TODO 先这样写，后面再修改
-    //         return Main(Math.pow(Math.E, a2*Math.log(-a1)), epslion);
-    //     else    
-    //         return 0-Main(Math.pow(Math.E, a2*Math.log(-a1)), epslion);
+     public static BigDecimal exp(Tree a1, Tree a2, BigDecimal epslion) {
+         BigDecimal bd_a1 = new BigDecimal(a1.value);
+         if (bd_a1.equals(BigDecimal.ZERO))
+             return BigDecimal.ZERO;
+         else if (bd_a1.compareTo(BigDecimal.ZERO) > 0){
+             String newExp = "e^"+a2.value+"*ln"+a1.value;
+             Tree root = Calculator.conversion(newExp).pop();
+             return Main(root, epslion);
+         }else if (Double.parseDouble(xs2fs(Double.parseDouble(a2.value))) % 2 == 0) {
+             String newExp = "e^"+a2.value+"*ln"+BigDecimal.ZERO.
+                     subtract(new BigDecimal(a1.value));
+             Tree root = Calculator.conversion(newExp).pop();
+             return Main(root, epslion);
+         }else {
+             String newExp = "e^"+a2.value+"*ln"+BigDecimal.ZERO.
+                     subtract(new BigDecimal(a1.value));
+             Tree root = Calculator.conversion(newExp).pop();
+             return BigDecimal.ZERO.subtract(Main(root, epslion));
+         }
 
-    // }
+     }
 
     /**
      * 求阶乘
@@ -245,10 +263,13 @@ public class ArithHelper {
      */
     public static BigDecimal cons(BigDecimal a) {
         int n = -1;
-        while (BigDecimal.TEN.pow(n).compareTo(a) > 0) {
+        int r;
+        r = BigDecimal.ONE.divide(BigDecimal.TEN.pow(-n), def_scale, 6).compareTo(a);
+        while (r > 0) {
             n--;
+            r = BigDecimal.ONE.divide(BigDecimal.TEN.pow(-n), def_scale, 6).compareTo(a);
         }
-        return BigDecimal.TEN.pow(n);
+        return BigDecimal.ONE.divide(BigDecimal.TEN.pow(-n), def_scale, 6);
     }
    
     /**
@@ -277,6 +298,47 @@ public class ArithHelper {
         return b.divide(one, scale, java.math.BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
+    public static String xs2fs(double fNumber) {
+
+        String sA = String.valueOf(fNumber);
+
+        if (sA.indexOf(".") < 0) {
+            // fNumber is an integer
+
+            return sA;
+        }
+
+        String sZsbf = sA.substring(0,sA.indexOf(".") );
+        String sXsbf = sA.substring(sA.indexOf(".") + 1);
+
+        int nXsws = sXsbf.length() ; //小数位数
+
+        long lFenmu = 1;
+        for (int k=0; k< nXsws; k++)
+            lFenmu *= 10;
+
+        long lFenzi = Long.parseLong( sZsbf + sXsbf );
+
+        long lXs = (lFenzi < lFenmu) ? lFenzi : lFenmu;
+
+        long j = 1; //最大公约数
+        for (j = lXs; j > 1; j --) {
+            if (lFenzi % j ==0 && lFenmu % j == 0) {
+                break;
+            }
+        }
+
+        lFenzi = lFenzi / j;
+        lFenmu = lFenmu / j;
+        return String.valueOf(lFenzi);
+
+//        return String.valueOf(lFenzi) + "/" + String.valueOf(lFenmu) ;
+
+    }
+
+    public static void main(String[] args) {
+        System.out.println ( xs2fs(1.24) );
+    }
 
 
     public static boolean isOp(String str) {

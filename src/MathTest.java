@@ -1,21 +1,18 @@
 import java.math.BigDecimal;
-import java.util.Scanner;
 
-import Calculator;
 
 public class MathTest {
     public static void main(String[] args) {
         // String expression = "(0*1--3)-5/-4-(3*(-2.13))";
         BigDecimal epslion = new BigDecimal("0.1");
-        String expression = "1";
-       
-        
-        Tree root = new Tree();
+        String expression = "1/3+1+2*1";
+        Tree root = Calculator.conversion(expression).pop();
+         System.out.print(ArithHelper.Main(root, epslion).toString());
+//        System.out.print(ArithHelper.cons(epslion.divide(ArithHelper.Two, ArithHelper.def_scale, 6)));
 
-        // root = Calculator.conversion(expression).pop();
-        // System.out.print(ArithHelper.Main(root, epslion).toString());
-
-         // String doubleReg = "[-+]?([0-9]+(\\.[0-9]+)?|π|e)";
+         // String doubleR
+        //
+        // eg = "[-+]?([0-9]+(\\.[0-9]+)?|π|e)";
         // if (expression.matches("^ln"+doubleReg+"$"))
         //     System.out.print(Math.log(Double.valueOf(expression.substring(2))));
         // else{

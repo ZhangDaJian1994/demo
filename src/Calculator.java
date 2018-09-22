@@ -1,7 +1,4 @@
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Stack;
-import ArithHelper;
 
 /**
  * 算数表达式求值  直接调用Calculator的类方法conversion()  传入算数表达式，将返回一个浮点值结果
@@ -57,7 +54,7 @@ public class Calculator {
         } catch (Exception e) {
             // e.printStackTrace();
             // 运算错误返回NaN
-            return 0.0 / 0.0;
+//            return 0.0 / 0.0;
         }
         // return new String().valueOf(result);
         return result_tree;
