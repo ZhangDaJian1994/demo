@@ -1,13 +1,5 @@
 import java.math.BigDecimal;
 
-
-
-
-class Tree {
-    String value;
-    Tree left;
-    Tree right;
-}
 public class ArithHelper {
 
 
@@ -55,7 +47,7 @@ public class ArithHelper {
             return mul(a.left, a.right, epslion);
         }else if (isOp(a.value) && a.value.equals("/")) {
             return div(a.left, a.right, epslion);
-            }
+        }
         }
 
 
@@ -246,7 +238,7 @@ public class ArithHelper {
         else
             return n.multiply(factorial(n.subtract(BigDecimal.ONE)));
     }
-    /**
+    /*
      * 生成精度
      * @param a
      * @return
@@ -287,15 +279,22 @@ public class ArithHelper {
 
 
 
-    private static boolean isOp(String str) {
+    public static boolean isOp(String str) {
         if ("+-*/^ln".contains(str)){
             return true;
         }
         return false;
     }
 
-    private static boolean is4Op(String str) {
+    public static boolean is4Op(String str) {
         if ("+-*/".contains(str)){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean is1Op(String str) {
+        if ("lnlogsincox".contains(str)) {
             return true;
         }
         return false;

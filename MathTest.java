@@ -6,9 +6,16 @@ import Calculator;
 public class MathTest {
     public static void main(String[] args) {
         // String expression = "(0*1--3)-5/-4-(3*(-2.13))";
+        BigDecimal epslion = new BigDecimal("0.1");
+        String expression = "1";
+       
+        
+        Tree root = new Tree();
 
-        String expression = "(1+2)";
-        // String doubleReg = "[-+]?([0-9]+(\\.[0-9]+)?|π|e)";
+        // root = Calculator.conversion(expression).pop();
+        // System.out.print(ArithHelper.Main(root, epslion).toString());
+
+         // String doubleReg = "[-+]?([0-9]+(\\.[0-9]+)?|π|e)";
         // if (expression.matches("^ln"+doubleReg+"$"))
         //     System.out.print(Math.log(Double.valueOf(expression.substring(2))));
         // else{
@@ -29,13 +36,8 @@ public class MathTest {
         // BigDecimal bd2 = new BigDecimal(Math.pow(Math.E, bd));
 
         // double result = Calculator.conversion(expression);
-        // System.out.println(expression + " = " + result);
+        // // System.out.println(expression + " = " + result);
         // System.out.println();
-
-
-        BigDecimal b1 = new BigDecimal(0.2);
-BigDecimal b2 = new BigDecimal(0.5);
-System.out.println("b1="+b1+"\nb2="+b2);
 
     }
 
