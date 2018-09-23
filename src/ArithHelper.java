@@ -7,7 +7,7 @@ public class ArithHelper {
     public static BigDecimal ZeroDone = new BigDecimal("0.1");
     public static BigDecimal Four = new BigDecimal(4);
     // 默认除法运算精度
-    public static  int def_scale = 10;
+    public static  int def_scale = 100;
     // 这个类不能实例化
     private ArithHelper() {
     }
@@ -21,7 +21,14 @@ public class ArithHelper {
      */
     public static BigDecimal Main(Tree a, BigDecimal epslion) {
         if (!isOp(a.value)) {   //a是常数
-            return new BigDecimal(a.value); ////直接返回a 或在精度" 的条件下将其截断.
+            if (a.value.equals("e")){
+                return new BigDecimal(Math.E);
+            }else if (a.value.equals("pi")){
+
+            }else {
+                return new BigDecimal(a.value).setScale(MathTest.PRE, 6); ////直接返回a 或在精度" 的条件下将其截断.
+            }
+
         }else if (is4Op(a.value) && !isOp(a.left.value) && !isOp(a.right.value)) {   //a 是两个常数的四则运算
             BigDecimal left = new BigDecimal(a.left.value);
             BigDecimal right = new BigDecimal(a.right.value);
@@ -51,6 +58,12 @@ public class ArithHelper {
             return mul(a.left, a.right, epslion);
         }else if (isOp(a.value) && a.value.equals("/")) {
             return div(a.left, a.right, epslion);
+        }else if (isOp(a.value) && a.value.equals("ln")) {
+            return ln(a.right, epslion);
+        }else if (isOp(a.value) && a.value.equals("^") && a.left.value.equals("e")) {
+            return exp(a.right, epslion);
+        }else if (isOp(a.value) && a.value.equals("^")) {
+            return exp(a.left, a.right, epslion);
         }
         return new BigDecimal("0");
         }
@@ -73,6 +86,7 @@ public class ArithHelper {
         while (r == 0 || r == -1) {  //|˜ a 2 | <= 2 × ε 2
             epslion2 = ZeroDone.multiply(epslion2);
             a2_ = Main(right, epslion2);
+            r = a2_.abs().compareTo(Two.multiply(epslion2));
         }
         BigDecimal a2_abs = a2_.abs();
         BigDecimal a2_abs_down = a2_abs.subtract(epslion2);
@@ -80,6 +94,7 @@ public class ArithHelper {
         while (r1 == 0 || r1 == 1) {
             epslion2 = ZeroDone.multiply(epslion2);
             a2_ = Main(right, epslion2);
+            r1 = Four.multiply(a1_abs_up).multiply(epslion2).abs().compareTo(a2_.multiply(a2_abs_down).multiply(epslion).abs());
         }
         a1_ = Main(left, cons(a2_abs.divide(Four, def_scale, 6).multiply(epslion)));
         Tree t = new Tree();
@@ -128,6 +143,9 @@ public class ArithHelper {
 
              while (r == 0 || r == 1) {
                  n = n.add(BigDecimal.ONE);
+                 four_n_c = Four.multiply(c).multiply(n);
+                 r = Two.multiply(c_1_abs.pow(2*n.intValue()+1)).
+                         compareTo(four_n_c.multiply(c.add(BigDecimal.ONE).pow(2*n.intValue()-1)).multiply(epslion));
              }
             //求前n项表达式之和
             BigDecimal sum = new BigDecimal("0");
@@ -164,6 +182,8 @@ public class ArithHelper {
             while ((r1 == 0 || r1 == -1) && r2 == 1 ){
                 epslion_ = ZeroDone.multiply(epslion_);
                 a_ = Main(a, epslion_);
+                r1 = a_abs.compareTo(Two.multiply(epslion_));
+                r2 = Two.multiply(epslion_).compareTo(a_abs.subtract(epslion_).multiply(epslion));
             }
             Tree t = new Tree();
             t.value = a_.toString();
@@ -177,7 +197,7 @@ public class ArithHelper {
      */
     public static BigDecimal exp1(Tree a, BigDecimal epslion) {
         BigDecimal c = new BigDecimal(a.value);
-        int cc = c.abs().intValue();
+        int cc = (int)Math.ceil(c.abs().doubleValue());
         int n = Math.max(cc, 1);
         BigDecimal nn = new BigDecimal(n);
 
@@ -185,15 +205,18 @@ public class ArithHelper {
             .multiply(factorial(nn.subtract(BigDecimal.ONE))));
         
         while ( r == 0 || r == 1) {
-             n++;
+            n += 1;
+            nn = new BigDecimal(n);
+            r = Two.multiply(c.pow(n)).compareTo(nn.subtract(c).multiply(epslion)
+                    .multiply(factorial(nn.subtract(BigDecimal.ONE))));
         }
 
         BigDecimal sum = new BigDecimal("0");
         /// 计算式(19) 中前 n 项的和 .
         for (int i = 0; i < n; i++) {
-            BigDecimal k = new BigDecimal(i);
-            BigDecimal fm = factorial(k);
-            sum = sum.add(BigDecimal.ONE.divide(fm, def_scale, 6).multiply(c.pow(i)));
+            BigDecimal fm = factorial(new BigDecimal(i));
+            sum = sum.add(c.pow(i).divide(fm, def_scale, 6));
+//            sum = sum.add(BigDecimal.ONE.divide(fm).multiply(c.pow(i)));
         }
         Tree t = new Tree();
         t.value = sum.toString();
@@ -213,7 +236,7 @@ public class ArithHelper {
         t.left = null;
         t.right = null;
         BigDecimal y1 = exp1(t, epslion__);
-        BigDecimal a1_ = Main(a, cons(epslion.divide(Two.multiply(y1.add(epslion__)), def_scale, 6)));
+        BigDecimal a1_ = Main(a, cons(epslion.divide(Two.multiply(y1.add(epslion__)), 100, 6)));
         t = new Tree();
         t.value = a1_.toString();
         t.left = null;
@@ -229,17 +252,17 @@ public class ArithHelper {
          if (bd_a1.equals(BigDecimal.ZERO))
              return BigDecimal.ZERO;
          else if (bd_a1.compareTo(BigDecimal.ZERO) > 0){
-             String newExp = "e^"+a2.value+"*ln"+a1.value;
+             String newExp = "e^("+a2.value+"*ln"+a1.value+")";
              Tree root = Calculator.conversion(newExp).pop();
              return Main(root, epslion);
          }else if (Double.parseDouble(xs2fs(Double.parseDouble(a2.value))) % 2 == 0) {
-             String newExp = "e^"+a2.value+"*ln"+BigDecimal.ZERO.
-                     subtract(new BigDecimal(a1.value));
+             String newExp = "e^("+a2.value+"*ln"+BigDecimal.ZERO.
+                     subtract(new BigDecimal(a1.value))+")";
              Tree root = Calculator.conversion(newExp).pop();
              return Main(root, epslion);
          }else {
-             String newExp = "e^"+a2.value+"*ln"+BigDecimal.ZERO.
-                     subtract(new BigDecimal(a1.value));
+             String newExp = "e^("+a2.value+"*ln"+BigDecimal.ZERO.
+                     subtract(new BigDecimal(a1.value))+")";
              Tree root = Calculator.conversion(newExp).pop();
              return BigDecimal.ZERO.subtract(Main(root, epslion));
          }
@@ -247,14 +270,34 @@ public class ArithHelper {
      }
 
     /**
-     * 求阶乘
+     * 求阶乘递归形式
+     */
+//    public static BigDecimal factorial(BigDecimal n) {
+//        int r = n.compareTo(BigDecimal.ONE);
+//        if (r == 0 || r == -1)
+//            return BigDecimal.ONE;
+//        else
+//            return n.multiply(factorial(n.subtract(BigDecimal.ONE)));
+//    }
+
+    /**
+     * 求阶乘非递归形式
+     * @param n
+     * @return
      */
     public static BigDecimal factorial(BigDecimal n) {
         int r = n.compareTo(BigDecimal.ONE);
         if (r == 0 || r == -1)
             return BigDecimal.ONE;
-        else
-            return n.multiply(factorial(n.subtract(BigDecimal.ONE)));
+        else {
+            BigDecimal sum = BigDecimal.ONE;
+            BigDecimal i = Two;
+//            int k = i.compareTo(n);
+            for ( ;  i.compareTo(n) == 0 ||  i.compareTo(n) == -1; i = i.add(BigDecimal.ONE)) {
+                sum = sum.multiply(i);
+            }
+            return sum;
+        }
     }
     /*
      * 生成精度
@@ -264,12 +307,12 @@ public class ArithHelper {
     public static BigDecimal cons(BigDecimal a) {
         int n = -1;
         int r;
-        r = BigDecimal.ONE.divide(BigDecimal.TEN.pow(-n), def_scale, 6).compareTo(a);
+        r = BigDecimal.ONE.divide(BigDecimal.TEN.pow(-n), 100, 6).compareTo(a);
         while (r > 0) {
             n--;
-            r = BigDecimal.ONE.divide(BigDecimal.TEN.pow(-n), def_scale, 6).compareTo(a);
+            r = BigDecimal.ONE.divide(BigDecimal.TEN.pow(-n), 100, 6).compareTo(a);
         }
-        return BigDecimal.ONE.divide(BigDecimal.TEN.pow(-n), def_scale, 6);
+        return BigDecimal.ONE.divide(BigDecimal.TEN.pow(-n), 100, 6);
     }
    
     /**
@@ -336,13 +379,10 @@ public class ArithHelper {
 
     }
 
-    public static void main(String[] args) {
-        System.out.println ( xs2fs(1.24) );
-    }
 
 
     public static boolean isOp(String str) {
-        if ("+-*/^ln".contains(str)){
+        if ("()+-*/^ln".contains(str)){
             return true;
         }
         return false;

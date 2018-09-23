@@ -1,13 +1,19 @@
 import java.math.BigDecimal;
+import java.util.Scanner;
 
 
 public class MathTest {
+    public static  int PRE = 1;
     public static void main(String[] args) {
         // String expression = "(0*1--3)-5/-4-(3*(-2.13))";
-        BigDecimal epslion = new BigDecimal("0.1");
-        String expression = "1/3+1+2*1";
+        Scanner sc = new Scanner(System.in);
+        PRE = sc.nextInt();
+        BigDecimal epslion = new BigDecimal(BigDecimal.ONE.divide(BigDecimal.TEN.pow(PRE)).toString());
+//        BigDecimal epslion = new BigDecimal("0.00000001");
+        String expression = "20^65-e^(65*ln(20))";
+        //((1/3−0.3333333333333333235)+(1/3−0.333333333333333759)*0.008)*10^20
         Tree root = Calculator.conversion(expression).pop();
-         System.out.print(ArithHelper.Main(root, epslion).toString());
+        System.out.print(ArithHelper.Main(root, epslion).toString());
 //        System.out.print(ArithHelper.cons(epslion.divide(ArithHelper.Two, ArithHelper.def_scale, 6)));
 
          // String doubleR
@@ -35,6 +41,8 @@ public class MathTest {
         // double result = Calculator.conversion(expression);
         // // System.out.println(expression + " = " + result);
         // System.out.println();
+
+
 
     }
 
