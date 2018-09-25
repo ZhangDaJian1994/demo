@@ -50,7 +50,7 @@ public class Calculator {
         Stack<Tree> result_tree = new Stack<>();
         Calculator cal = new Calculator();
         try {
-            expression = transform(expression);
+//            expression = transform(expression);
             result_tree = cal.calculate(expression);
         } catch (Exception e) {
             // e.printStackTrace();

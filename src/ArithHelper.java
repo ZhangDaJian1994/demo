@@ -7,7 +7,7 @@ public class ArithHelper {
     public static BigDecimal ZeroDone = new BigDecimal("0.1");
     public static BigDecimal Four = new BigDecimal(4);
     // 默认除法运算精度
-    public static  int def_scale = 100;
+    public static  int def_scale = 10;
     // 这个类不能实例化
     private ArithHelper() {
     }
@@ -21,13 +21,7 @@ public class ArithHelper {
      */
     public static BigDecimal Main(Tree a, BigDecimal epslion) {
         if (!isOp(a.value)) {   //a是常数
-            if (a.value.equals("e")){
-                return new BigDecimal(Math.E);
-            }else if (a.value.equals("pi")){
-
-            }else {
-                return new BigDecimal(a.value).setScale(MathTest.PRE, 6); ////直接返回a 或在精度" 的条件下将其截断.
-            }
+            return new BigDecimal(a.value).setScale(def_scale, 6); ////直接返回a 或在精度" 的条件下将其截断.
 
         }else if (is4Op(a.value) && !isOp(a.left.value) && !isOp(a.right.value)) {   //a 是两个常数的四则运算
             BigDecimal left = new BigDecimal(a.left.value);
@@ -111,6 +105,7 @@ public class ArithHelper {
      * @return
      */
     public static BigDecimal mul(Tree a1, Tree a2, BigDecimal epslion) {
+        long b = System.currentTimeMillis();
         BigDecimal a2_ = Main(a2, new BigDecimal("0.1"));
         BigDecimal a2_abs = a2_.abs();
         BigDecimal epslion_1 = cons(epslion.divide(Two.multiply(a2_abs.add(new BigDecimal("0.1"))), def_scale, 6)); //BigDecimal epslion_1 = cons(epslion/(2*(Math.abs(a2_)+0.1)));
@@ -118,6 +113,8 @@ public class ArithHelper {
         BigDecimal a1_abs = a1_.abs();
         BigDecimal epslion_2 = cons(epslion.divide(Two.multiply(a1_abs), def_scale, 6));//BigDecimal epslion_2 = cons(epslion/(2*Math.abs(a1_)));
         a2_ = Main(a2, epslion_2);
+        System.out.print("*程序执行时间为：");
+        System.out.println(System.currentTimeMillis()-b+"毫秒");
         return a1_.multiply(a2_);
     }
     /**
@@ -170,6 +167,7 @@ public class ArithHelper {
      * @return
      */
     public static BigDecimal ln(Tree a, BigDecimal epslion) {
+        long b= System.currentTimeMillis();//获取当前系统时间(毫秒)
         if (!isOp(a.value)) {
             return lnl(a, epslion);
         }
@@ -189,6 +187,8 @@ public class ArithHelper {
             t.value = a_.toString();
             t.left = null;
             t.right = null;
+            System.out.print("ln程序执行时间为：");
+            System.out.println(System.currentTimeMillis()-b+"毫秒");
             return lnl(t, epslion.divide(Two, def_scale, 6));
         }
     }
@@ -203,7 +203,9 @@ public class ArithHelper {
 
         int r = Two.multiply(c.pow(n)).compareTo(nn.subtract(c).multiply(epslion)
             .multiply(factorial(nn.subtract(BigDecimal.ONE))));
-        
+
+        long b= System.currentTimeMillis();//获取当前系统时间(毫秒)
+
         while ( r == 0 || r == 1) {
             n += 1;
             nn = new BigDecimal(n);
@@ -218,6 +220,8 @@ public class ArithHelper {
             sum = sum.add(c.pow(i).divide(fm, def_scale, 6));
 //            sum = sum.add(BigDecimal.ONE.divide(fm).multiply(c.pow(i)));
         }
+        System.out.print("exp1程序执行时间为：");
+        System.out.println(System.currentTimeMillis()-b+"毫秒");
         Tree t = new Tree();
         t.value = sum.toString();
         t.left = null;
